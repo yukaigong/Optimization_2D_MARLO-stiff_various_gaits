@@ -1,3 +1,7 @@
+# somefiles we don't want
+*.mpr
+build_opt/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
