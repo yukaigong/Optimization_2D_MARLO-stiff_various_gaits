@@ -9,6 +9,39 @@ function [obj] = configureConstraints(obj, varargin)
     for i=1:obj.nDomain
         domain = obj.domains{i};
         
+        %% Physical Constraints
+
+        % Friction Cone
+        domain = addConstraint(domain,'Nonlinear-Inequality',...
+            'friction',1,1:domain.nNode,{{'Fe'}},0,0.5);
+        
+        % Vertical GRF
+        domain = addConstraint(domain,'Nonlinear-Inequality',...
+            'GRF',1,1:domain.nNode,{{'Fe'}},400,650);
+        
+        % Knee angles
+        domain = addConstraint(domain,'Nonlinear-Inequality',...
+            'kneeAngles',2,1:domain.nNode,{{'q'}},50*pi/180,85*pi/180);
+        
+        % Foot Height
+        domain = addConstraint(domain,'Nonlinear-Inequality',...
+            'footClearance',1,ceil(domain.nNode/2),{{'q'}},0.1,0.15);
+        
+        % swing leg retraction
+        domain = addConstraint(domain,'Nonlinear-Inequality',...
+            'swingLegRetraction',1,domain.nNode,{{'dq'}},-2,0);
+        
+        % Average Speed
+        domain = addConstraint(domain,'Nonlinear-Inequality',...
+            'speed',1,domain.nNode,{{'t','q'}},1,1.1);
+                
+%         % torso ang
+%         domain = addConstraint(domain,'Nonlinear-Inequality',...
+%             'torso',1,1:domain.nNode,{{'q'}},-0.15,-0.1);
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Basic Constraints %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         %% Dynamics
         
         % dynamics equation: D*ddq + H(q,dq) + F_spring - Be*u - J^T(q)*Fe = 0;
@@ -53,36 +86,6 @@ function [obj] = configureConstraints(obj, varargin)
         domain = addConstraint(domain,'Nonlinear-Equality',...
             'swingFoot_guard',1,domain.nNode,{{'q'}},0,0);
         
-        %% Physical Constraints
-
-        % Friction Cone
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'friction',1,1:domain.nNode,{{'Fe'}},0,0.5);
-        
-        % Vertical GRF
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'GRF',1,1:domain.nNode,{{'Fe'}},400,650);
-        
-        % Knee angles
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'kneeAngles',2,1:domain.nNode,{{'q'}},50*pi/180,85*pi/180);
-        
-        % Foot Height
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'footClearance',1,ceil(domain.nNode/2),{{'q'}},0.1,0.15);
-        
-        % Average Speed
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'swingLegRetraction',1,domain.nNode,{{'dq'}},0.5,2);
-        
-        % Average Speed
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'speed',1,domain.nNode,{{'t','q'}},0.5,0.6);
-                
-%         % torso ang
-%         domain = addConstraint(domain,'Nonlinear-Inequality',...
-%             'torso',1,1:domain.nNode,{{'q'}},-0.15,-0.1);
-
         %% Time Based Virtual Constraints
         nodeList = 1:domain.nNode;
         for j = nodeList
@@ -107,10 +110,8 @@ function [obj] = configureConstraints(obj, varargin)
                 'ddy',4,j,...
                 {{'q','dq','ddq','t','a'}},-5e-4,5e-4,extra);
         end
-
         
         %% Parameter Continuity
-       
         % bezier parameter continuity
         domain = addConstraint(domain,'Linear-Equality',...
             'aCont',24,1:(domain.nNode-1),...
@@ -150,7 +151,6 @@ function [obj] = configureConstraints(obj, varargin)
                 'midPointVel',7,j,...
                 {{'t','dq','ddq'},{'dq'},{'dq','ddq'}},0,0,extra);
         end
-
  
         %% Configure Contraint Structure and Update Opt Problem
         
@@ -204,6 +204,5 @@ function [obj] = configureConstraints(obj, varargin)
     
     obj.cl = constr_lb;
     obj.cu = constr_ub;
-    
-    
+
 end

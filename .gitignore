@@ -1,5 +1,5 @@
 # somefiles we don't want
-*.mpr
+*.mp4
 build_opt/
 
 # Windows image file caches

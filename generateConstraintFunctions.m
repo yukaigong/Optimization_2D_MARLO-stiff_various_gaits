@@ -361,7 +361,7 @@ matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_friction_', domainName],
 matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_friction_', domainName], 'vars', {vars});
 
 % Swing Leg Retraction
-constraint = (dq(4) + dq(5))/2;
+constraint = (dq(6) + dq(7))/2;
 vars = [dq].';
 J_constraint = jacobian(constraint,vars);
 matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_swingLegRetraction_', domainName], 'vars', {vars});
@@ -383,13 +383,6 @@ vars = [q;u].';
 J_cost = jacobian(cost, vars);
 matlabFunction(cost, 'file', [BUILD_OPT_PATH ,'\f_torquePerSteplengthCost_', domainName], 'vars', {vars});
 matlabFunction(J_cost, 'file', [BUILD_OPT_PATH ,'\J_torquePerSteplengthCost_', domainName], 'vars', {vars});
-
-constraint = (dq(4) + dq(5))/2;
-vars = [dq].';
-J_constraint = jacobian(constraint,vars);
-matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_swingLegRetraction_', domainName], 'vars', {vars});
-matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_swingLegRetraction_', domainName], 'vars', {vars});
-
 
 % adding torso angle
 constraint=q(3);
