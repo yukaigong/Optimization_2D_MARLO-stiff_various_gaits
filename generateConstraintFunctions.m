@@ -29,6 +29,13 @@ M = 5; % order of bezier
 x = [q;dq];
 
 
+q1=sym('q1', [7, 1]);
+dq1=sym('dq1', [7, 1]);
+q2=sym('q2', [7, 1]);
+dq2=sym('dq2', [7, 1]);
+x1 = [q1;dq1];
+x2 = [q2;dq2];
+
 holConstraints = p4R; % stack all the holonomic constraits here
 holConstraints_desired = [0;0]; % desired values for holonomic constraints
 
@@ -391,7 +398,13 @@ J_constraint=jacobian(constraint,vars);
 matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_torso_', domainName], 'vars', {vars});
 matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_torso_', domainName], 'vars', {vars});
 
+%% Constrain to externally provided state
+selected = sym('s',[2*DOF,1]);
+constraint = selected.*(x1-x2);
+vars = [x1].';
+extra = [selected; x2].';
+J_constraint = jacobian(constraint,vars);
 
-
-
+matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_xConstrainExternal_', domainName], 'vars', {vars,extra});
+matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_xConstrainExternal_', domainName], 'vars', {vars,extra});
 

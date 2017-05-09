@@ -5,17 +5,43 @@ function [obj] = configureConstraints(obj, varargin)
     % Author: Ayonga Hereid <ayonga@tamu.edu>
     gaits_type=varargin{1};
     constraints = cell(obj.nDomain,1);
+    DOF = 7;
     
     % register constraints
+    
+    if gaits_type == 2
+        
+        % begin with initial velocity, end at final velocity
+        load('0p2ms.mat')
+        x_0   = [outputs{1}.q(1,1:7), outputs{1}.dq(1,1:7)]';
+        load('0p0ms.mat')
+        x_end = [outputs{1}.q(end,1:7), outputs{1}.dq(end,1:7)]';
+        
+        selected=ones(2*7,1);
+        extra=[selected;x_0]';
+        obj.domains{1} = addConstraint(obj.domains{1},'Nonlinear-Equality',...
+            'xConstrainExternal',2*DOF,1,{{'q','dq'}},-5e-4,5e-4,extra);
+        
+        selected=ones(2*DOF,1);selected([1,2,8,9])=0;
+        extra=[selected;x_end]';
+        obj.domains{obj.nDomain} = addConstraint(obj.domains{obj.nDomain},'Nonlinear-Equality',...
+            'xConstrainExternal',2*DOF,obj.domains{obj.nDomain}.nNode,{{'q','dq'}},-5e-4,5e-4,extra);
+    end
+    
+    
+    
+    
     for i=1:obj.nDomain
         domain = obj.domains{i};
         
         if gaits_type == 1
+            
             %  Impact and Reset Map
             deps_1 = domain.optVarIndices.q(end,:);
             deps_2 = domain.optVarIndices.q(1,:);
             domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
                 'qResetMap',7,1,{deps_1, deps_2},-5e-4,5e-4);
+            
             deps_1 = [domain.optVarIndices.q(end,:), ...
                 domain.optVarIndices.dq(end,:), ...
                 domain.optVarIndices.Fimp(end,:)];
@@ -23,16 +49,28 @@ function [obj] = configureConstraints(obj, varargin)
             domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
                 'dqResetMap',9,1,{deps_1, deps_2},-5e-4,5e-4);
             
-            
-            speed = 0.6;
             % Average Speed
+            speed = 0.5;
             domain = addConstraint(domain,'Nonlinear-Inequality',...
-                'speed',1,domain.nNode,{{'t','q'}},speed,speed+0.1);
-            
-%             domain = addConstraint(domain,'Nonlinear-Inequality',...
-%                 'speed',1,domain.nNode,{{'t','q'}},1,1.1);
+                'speed',1,domain.nNode,{{'t','q'}},speed-0.0005,speed+0.0005);
         end
         
+        if gaits_type == 2       
+            % stitches domains together through impact and reset
+            if i < obj.nDomain
+                deps_1 = domain.optVarIndices.q(end,:);
+                deps_2 = obj.domains{i+1}.optVarIndices.q(1,:);
+                domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
+                    'qResetMap',7,domain.nNode,{deps_1, deps_2},-5e-4,5e-4);
+                
+                deps_1 = [domain.optVarIndices.q(end,:), ...
+                    domain.optVarIndices.dq(end,:), ...
+                    domain.optVarIndices.Fimp(end,:)];
+                deps_2 = obj.domains{i+1}.optVarIndices.dq(1,:);
+                domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
+                    'dqResetMap',9,domain.nNode,{deps_1, deps_2},-5e-4,5e-4);
+            end
+        end
         
         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   General Constraints   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,7 +94,7 @@ function [obj] = configureConstraints(obj, varargin)
         
         % swing leg retraction
         domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'swingLegRetraction',1,domain.nNode,{{'dq'}},-2,0);
+            'swingLegRetraction',1,domain.nNode,{{'dq'}},-2,0.2);
         
 
                 

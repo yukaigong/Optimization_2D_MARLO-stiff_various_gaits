@@ -1,10 +1,22 @@
 %% Direct Collocation Based Optimization
 setup;
 
-gaits_type=1; % type 1 is periodic
+gaits_type=2; % type 1 is periodic
 
-if gaits_type==1
-    optName = 'opt_2DWalking'
+% if gaits_type==1
+%     optName = 'opt_2DWalking'
+% end
+% 
+% if gaits_type==2
+%     optName = 'opt_2DWalking_transient';
+% end
+switch gaits_type
+    case 1
+        optName = 'opt_2DWalking'
+    case 2
+        optName = 'opt_2DWalking_transient'
+    otherwise
+        disp('gaits type wrong')
 end
 
 opt = loadOptProblem(optName);
@@ -89,7 +101,8 @@ tic
 toc
 
 [outputs] = getOptOutput(opt.domains, x)
-animateStep(outputs{1})
+
+animateStep(outputs)
 
 
 

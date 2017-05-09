@@ -1,0 +1,72 @@
+# specify optimization options here
+options:
+- Option1: 'Example1'
+
+# specify domain names and number of nodes
+domains:
+- name: 2DSS
+  numNodes: 15
+- name: 2DSS
+  numNodes: 15
+- name: 2DSS
+  numNodes: 15
+
+# value limits of optimization variables or constraints
+boundaries:
+- domain1:
+    minJointAngles: [-1, 0.5, -0.25, 2, 2, 2, 2]
+    maxJointAngles: [1, 1, 0.25, 5, 5, 5, 5]
+    minJointVelocities: [-20, -20, -20, -20, -20, -20, -20]
+    maxJointVelocities: [20, 20, 20, 20, 20, 20, 20]
+    minJointAccel: [-100,-100,-100,-100,-100,-100,-100]
+    maxJointAccel: [100,100,100,100,100,100,100]
+    minTorqueLimit: [-5,-5,-5,-5]
+    maxTorqueLimit: [5,5,5,5]
+    minConstrForces: [-1000,0]
+    maxConstrForces: [1000,800]
+    minImpactForces: [-100,0]
+    maxImpactForces: [100,20]
+    minTimeInterval: 0.25
+    maxTimeInterval: 0.75
+    minAlpha: [-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10]
+    maxAlpha: [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+    minHolonomicConstraint: [-10,-10]
+    maxHolonomicConstraint: [10,10]
+  domain2:
+    minJointAngles: [-1, 0.5, -0.25, 2, 2, 2, 2]
+    maxJointAngles: [1, 1, 0.25, 5, 5, 5, 5]
+    minJointVelocities: [-20, -20, -20, -20, -20, -20, -20]
+    maxJointVelocities: [20, 20, 20, 20, 20, 20, 20]
+    minJointAccel: [-100,-100,-100,-100,-100,-100,-100]
+    maxJointAccel: [100,100,100,100,100,100,100]
+    minTorqueLimit: [-5,-5,-5,-5]
+    maxTorqueLimit: [5,5,5,5]
+    minConstrForces: [-1000,0]
+    maxConstrForces: [1000,800]
+    minImpactForces: [-100,0]
+    maxImpactForces: [100,20]
+    minTimeInterval: 0.25
+    maxTimeInterval: 0.75
+    minAlpha: [-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10]
+    maxAlpha: [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+    minHolonomicConstraint: [-10,-10]
+    maxHolonomicConstraint: [10,10]
+  domain3:
+    minJointAngles: [-1, 0.5, -0.25, 2, 2, 2, 2]
+    maxJointAngles: [1, 1, 0.25, 5, 5, 5, 5]
+    minJointVelocities: [-20, -20, -20, -20, -20, -20, -20]
+    maxJointVelocities: [20, 20, 20, 20, 20, 20, 20]
+    minJointAccel: [-100,-100,-100,-100,-100,-100,-100]
+    maxJointAccel: [100,100,100,100,100,100,100]
+    minTorqueLimit: [-5,-5,-5,-5]
+    maxTorqueLimit: [5,5,5,5]
+    minConstrForces: [-1000,0]
+    maxConstrForces: [1000,800]
+    minImpactForces: [-100,0]
+    maxImpactForces: [100,20]
+    minTimeInterval: 0.25
+    maxTimeInterval: 0.75
+    minAlpha: [-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10]
+    maxAlpha: [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+    minHolonomicConstraint: [-10,-10]
+    maxHolonomicConstraint: [10,10]
