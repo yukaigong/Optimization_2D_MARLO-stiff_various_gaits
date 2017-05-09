@@ -3,12 +3,39 @@ function [obj] = configureConstraints(obj, varargin)
     %
     % Copyright 2014-2015 Texas A&M University AMBER Lab
     % Author: Ayonga Hereid <ayonga@tamu.edu>
+    gaits_type=varargin{1};
     constraints = cell(obj.nDomain,1);
     
     % register constraints
     for i=1:obj.nDomain
         domain = obj.domains{i};
         
+        if gaits_type == 1
+            %  Impact and Reset Map
+            deps_1 = domain.optVarIndices.q(end,:);
+            deps_2 = domain.optVarIndices.q(1,:);
+            domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
+                'qResetMap',7,1,{deps_1, deps_2},-5e-4,5e-4);
+            deps_1 = [domain.optVarIndices.q(end,:), ...
+                domain.optVarIndices.dq(end,:), ...
+                domain.optVarIndices.Fimp(end,:)];
+            deps_2 = domain.optVarIndices.dq(1,:);
+            domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
+                'dqResetMap',9,1,{deps_1, deps_2},-5e-4,5e-4);
+            
+            
+            speed = 0.6;
+            % Average Speed
+            domain = addConstraint(domain,'Nonlinear-Inequality',...
+                'speed',1,domain.nNode,{{'t','q'}},speed,speed+0.1);
+            
+%             domain = addConstraint(domain,'Nonlinear-Inequality',...
+%                 'speed',1,domain.nNode,{{'t','q'}},1,1.1);
+        end
+        
+        
+        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   General Constraints   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% Physical Constraints
 
         % Friction Cone
@@ -31,9 +58,7 @@ function [obj] = configureConstraints(obj, varargin)
         domain = addConstraint(domain,'Nonlinear-Inequality',...
             'swingLegRetraction',1,domain.nNode,{{'dq'}},-2,0);
         
-        % Average Speed
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'speed',1,domain.nNode,{{'t','q'}},1,1.1);
+
                 
 %         % torso ang
 %         domain = addConstraint(domain,'Nonlinear-Inequality',...
@@ -69,18 +94,6 @@ function [obj] = configureConstraints(obj, varargin)
         domain = addConstraint(domain,'Nonlinear-Equality',...
             'holonomicAcc',2,1:domain.nNode,...
             {{'q','dq','ddq'}},-5e-6,5e-6);
-        
-        %  Impact and Reset Map
-        deps_1 = domain.optVarIndices.q(end,:);
-        deps_2 = domain.optVarIndices.q(1,:);
-        domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
-            'qResetMap',7,1,{deps_1, deps_2},-5e-4,5e-4);
-        deps_1 = [domain.optVarIndices.q(end,:), ...
-                  domain.optVarIndices.dq(end,:), ...
-                  domain.optVarIndices.Fimp(end,:)];
-        deps_2 = domain.optVarIndices.dq(1,:);
-        domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
-            'dqResetMap',9,1,{deps_1, deps_2},-5e-4,5e-4);
 
         %  Guard
         domain = addConstraint(domain,'Nonlinear-Equality',...

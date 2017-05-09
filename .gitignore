@@ -1,6 +1,7 @@
 # somefiles we don't want
 *.mp4
 build_opt/
+*.asv
 
 # Windows image file caches
 Thumbs.db

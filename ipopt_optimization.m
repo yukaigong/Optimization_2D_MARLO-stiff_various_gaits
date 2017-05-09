@@ -1,6 +1,12 @@
 %% Direct Collocation Based Optimization
 setup;
-optName = 'opt_2DWalking'
+
+gaits_type=1; % type 1 is periodic
+
+if gaits_type==1
+    optName = 'opt_2DWalking'
+end
+
 opt = loadOptProblem(optName);
 opt.options
 
@@ -14,7 +20,7 @@ opt = genBoundaries(opt);
 opt = generateZ0(opt);
 
 % add constraints
-opt = configureConstraints(opt);
+opt = configureConstraints(opt,gaits_type);
 
 % add cost function
 opt = configureObjective(opt);
