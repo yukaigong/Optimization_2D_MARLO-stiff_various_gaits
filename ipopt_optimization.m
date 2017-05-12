@@ -1,8 +1,10 @@
 %% Direct Collocation Based Optimization
 setup;
 
-gaits_type=2; % type 1 is periodic
-
+% gaits_type=3; % type 1 is periodic;
+%               % type 2 is three step transient
+%               % type 3 is three step periodic
+% speed=-1.2;
 % if gaits_type==1
 %     optName = 'opt_2DWalking'
 % end
@@ -13,8 +15,11 @@ gaits_type=2; % type 1 is periodic
 switch gaits_type
     case 1
         optName = 'opt_2DWalking'
+
     case 2
         optName = 'opt_2DWalking_transient'
+    case 3
+        optName = 'opt_2Dwalking_transient';
     otherwise
         disp('gaits type wrong')
 end
@@ -32,15 +37,15 @@ opt = genBoundaries(opt);
 opt = generateZ0(opt);
 
 % add constraints
-opt = configureConstraints(opt,gaits_type);
+opt = configureConstraints(opt,gaits_type,speed);
 
 % add cost function
 opt = configureObjective(opt);
 
 % Get Initial Condition
 x0 = opt.Z0;
-% old = load('x.mat')
-% x0 = old.x;
+old = load(['x_gaits_type=' num2str(gaits_type)]);
+x0 = old.x;
 
 %% Solve Optimization Problem
 debugMode = false;
@@ -52,14 +57,14 @@ options.cl = opt.cl;
 options.cu = opt.cu;
 
 options.ipopt.mu_strategy      = 'adaptive';
-options.ipopt.max_iter         = 1000;
-options.ipopt.tol              = 1e1;
+options.ipopt.max_iter         = 2000;
+options.ipopt.tol              = 1e-3;
 %     disp(['max iterations = ', num2str(options.ipopt.max_iter)])
 %     disp(['tolerance = ', num2str(options.ipopt.tol)])
 
-options.ipopt.dual_inf_tol           = 1e2;
-options.ipopt.constr_viol_tol        = 1e-4;
-options.ipopt.compl_inf_tol          = 1e2;
+% options.ipopt.dual_inf_tol           = 1e2;
+% options.ipopt.constr_viol_tol        = 1e-13;
+% options.ipopt.compl_inf_tol          = 1e2;
 
 %options.acceptable_tol  = 1e3;
 %options.acceptable_compl_inf_tol    = 1e0;
@@ -70,7 +75,7 @@ options.ipopt.hessian_approximation = 'limited-memory';
 options.ipopt.limited_memory_update_type = 'bfgs';  % {bfgs}, sr
 options.ipopt.limited_memory_max_history = 50;  % {6}
 options.ipopt.recalc_y = 'yes';
-options.ipopt.recalc_y_feas_tol = 1e-3;
+%options.ipopt.recalc_y_feas_tol = 1e-3;
 
 %options.ipopt.bound_relax_factor = 1e-3;
 options.ipopt.linear_solver = 'ma57';
@@ -101,8 +106,8 @@ tic
 toc
 
 [outputs] = getOptOutput(opt.domains, x)
-
-animateStep(outputs)
+save(['x_gaits_type=' num2str(gaits_type)],'x')
+% animateStep(outputs)
 
 
 
