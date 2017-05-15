@@ -22,8 +22,8 @@ boundaries:
     maxConstrForces: [1000,800]
     minImpactForces: [-100,0]
     maxImpactForces: [100,20]
-    minTimeInterval: 0.25
-    maxTimeInterval: 0.75
+    minTimeInterval: 0.35
+    maxTimeInterval: 0.35
     minAlpha: [-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10,-10]
     maxAlpha: [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
     minHolonomicConstraint: [-10,-10]

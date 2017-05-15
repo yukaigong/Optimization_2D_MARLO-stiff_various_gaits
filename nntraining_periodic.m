@@ -7,8 +7,8 @@
 %   input_avg - input data.
 %   output_alpha - target data.
 
-x = input_avg';
-t = output_alpha';
+% x = input_avg';
+% t = output_alpha';
 
 % Choose a Training Function
 % For a list of all training functions type: help nntrain
@@ -18,13 +18,13 @@ t = output_alpha';
 trainFcn = 'trainlm';  % Levenberg-Marquardt backpropagation.
 
 % Create a Fitting Network
-hiddenLayerSize = 20*ones(1,10);
+hiddenLayerSize = 5*ones(1,2);
 net = fitnet(hiddenLayerSize,trainFcn);
 
 % Setup Division of Data for Training, Validation, Testing
 net.divideParam.trainRatio = 70/100;
-net.divideParam.valRatio = 15/100;
-net.divideParam.testRatio = 15/100;
+net.divideParam.valRatio = 5/100;
+net.divideParam.testRatio = 5/100;
 
 % Train the Network
 [net,tr] = train(net,x,t);
@@ -49,21 +49,21 @@ x_line=linspace(min(x),max(x),100);
 y_line=net(x_line);
 
 % Re_Arrange the parameters
-re_y_line=zeros(size(y_line));
-re_t=zeros(size(t));
-for i = 1:4
-    index_1=(i-1)+[1 5 9 13 17 21];
-    index_2=(i-1)*6+[1 2 3 4 5 6];
-    re_y_line(index_2,:)=y_line(index_1,:);
-    re_t(index_2,:)=t(index_1,:);
-end
+% re_y_line=zeros(size(y_line));
+% re_t=zeros(size(t));
+% for i = 1:4
+%     index_1=(i-1)+[1 5 9 13 17 21];
+%     index_2=(i-1)*6+[1 2 3 4 5 6];
+%     re_y_line(index_2,:)=y_line(index_1,:);
+%     re_t(index_2,:)=t(index_1,:);
+% end
 
-for i=1:size(t,1)
-    subplot(4,6,i)
-    scatter(x,re_t(i,:))
-    hold on;
-    plot(x_line,re_y_line(i,:));
-    hold off;
-end
+% for i=1:size(t,1)
+%     subplot(4,6,i)
+%     scatter(x,re_t(i,:))
+%     hold on;
+%     plot(x_line,re_y_line(i,:));
+%     hold off;
+% end
     
 

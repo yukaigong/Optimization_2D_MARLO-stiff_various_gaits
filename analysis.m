@@ -69,8 +69,9 @@ end
 %% plot 3-d curve of the gaits and see if they are smooth
 
 outputs_name={'Stance Leg Angle', 'Swing Leg Angle', 'Stance Knee Angle', 'Swing Knee Angle'};
-
-for i = -12:1:12
+t=[];
+speed_range= -12:1:12;
+for i = speed_range
     load(['opt_result\avg_type1_' num2str(i) 'dms'])
     a=reshape(outputs{1}.a(1,:),4,6);
     s=linspace(0,1,29);
@@ -91,4 +92,7 @@ for i = -12:1:12
     if info.status ~=0 
         disp(i/12);
     end
+    t=[t outputs{1}.t(1)];
 end
+figure
+plot(speed_range,t)

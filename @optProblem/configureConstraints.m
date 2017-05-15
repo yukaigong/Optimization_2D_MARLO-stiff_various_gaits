@@ -5,28 +5,31 @@ function [obj] = configureConstraints(obj, varargin)
     % Author: Ayonga Hereid <ayonga@tamu.edu>
     gaits_type=varargin{1};
     speed=varargin{2}; % for periodic gaits
+    tgspeed=varargin{3}; % target speed for transient gait
+    ctspeed=varargin{4}; % current speed for transient gait;
     constraints = cell(obj.nDomain,1);
     DOF = 7;
+    const_error_bound=5e-13;
     
     % register constraints
     
     if gaits_type == 2
         
         % begin with initial velocity, end at final velocity
-        load('0p2ms.mat')
+        load(['opt_result\avg_type1_' num2str(ctspeed*10) 'dms'])
         x_0   = [outputs{1}.q(1,1:7), outputs{1}.dq(1,1:7)]';
-        load('0p0ms.mat')
+        load(['opt_result\avg_type1_' num2str(tgspeed*10) 'dms'])
         x_end = [outputs{1}.q(end,1:7), outputs{1}.dq(end,1:7)]';
         
         selected=ones(2*7,1);
         extra=[selected;x_0]';
         obj.domains{1} = addConstraint(obj.domains{1},'Nonlinear-Equality',...
-            'xConstrainExternal',2*DOF,1,{{'q','dq'}},-5e-4,5e-4,extra);
+            'xConstrainExternal',2*DOF,1,{{'q','dq'}},-const_error_bound,const_error_bound,extra);
         
         selected=ones(2*DOF,1);selected([1,2,8,9])=0;
         extra=[selected;x_end]';
         obj.domains{obj.nDomain} = addConstraint(obj.domains{obj.nDomain},'Nonlinear-Equality',...
-            'xConstrainExternal',2*DOF,obj.domains{obj.nDomain}.nNode,{{'q','dq'}},-5e-4,5e-4,extra);
+            'xConstrainExternal',2*DOF,obj.domains{obj.nDomain}.nNode,{{'q','dq'}},-const_error_bound,const_error_bound,extra);
     end
     
     if gaits_type == 3
@@ -34,14 +37,14 @@ function [obj] = configureConstraints(obj, varargin)
         deps_1 = obj.domains{obj.nDomain}.optVarIndices.q(end,:);
         deps_2 = obj.domains{1}.optVarIndices.q(1,:);
         obj.domains{obj.nDomain} = addConstraint(obj.domains{obj.nDomain},'Inter-Domain-Nonlinear',...
-            'qResetMap',7,obj.domains{obj.nDomain}.nNode,{deps_1, deps_2},-5e-4,5e-4);
+            'qResetMap',7,obj.domains{obj.nDomain}.nNode,{deps_1, deps_2},-const_error_bound,const_error_bound);
         
         deps_1 = [obj.domains{obj.nDomain}.optVarIndices.q(end,:), ...
             obj.domains{obj.nDomain}.optVarIndices.dq(end,:), ...
             obj.domains{obj.nDomain}.optVarIndices.Fimp(end,:)];
         deps_2 = obj.domains{1}.optVarIndices.dq(1,:);
         obj.domains{obj.nDomain} = addConstraint(obj.domains{obj.nDomain},'Inter-Domain-Nonlinear',...
-            'dqResetMap',9,obj.domains{obj.nDomain}.nNode,{deps_1, deps_2},-5e-4,5e-4);
+            'dqResetMap',9,obj.domains{obj.nDomain}.nNode,{deps_1, deps_2},-const_error_bound,const_error_bound);
     end
     
     
@@ -55,18 +58,18 @@ function [obj] = configureConstraints(obj, varargin)
             deps_1 = domain.optVarIndices.q(end,:);
             deps_2 = domain.optVarIndices.q(1,:);
             domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
-                'qResetMap',7,1,{deps_1, deps_2},-5e-4,5e-4);
+                'qResetMap',7,1,{deps_1, deps_2},-const_error_bound,const_error_bound);
             
             deps_1 = [domain.optVarIndices.q(end,:), ...
                 domain.optVarIndices.dq(end,:), ...
                 domain.optVarIndices.Fimp(end,:)];
             deps_2 = domain.optVarIndices.dq(1,:);
             domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
-                'dqResetMap',9,1,{deps_1, deps_2},-5e-4,5e-4);
+                'dqResetMap',9,1,{deps_1, deps_2},-const_error_bound,const_error_bound);
             
             % Average Speed
             domain = addConstraint(domain,'Nonlinear-Inequality',...
-                'speed',1,domain.nNode,{{'t','q'}},speed-0.0005,speed+0.0005);
+                'speed',1,domain.nNode,{{'t','q'}},speed-const_error_bound,speed+const_error_bound);
         end
         
         if gaits_type == 2 | gaits_type == 3       
@@ -75,21 +78,21 @@ function [obj] = configureConstraints(obj, varargin)
                 deps_1 = domain.optVarIndices.q(end,:);
                 deps_2 = obj.domains{i+1}.optVarIndices.q(1,:);
                 domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
-                    'qResetMap',7,domain.nNode,{deps_1, deps_2},-5e-4,5e-4);
+                    'qResetMap',7,domain.nNode,{deps_1, deps_2},-const_error_bound,const_error_bound);
                 
                 deps_1 = [domain.optVarIndices.q(end,:), ...
                     domain.optVarIndices.dq(end,:), ...
                     domain.optVarIndices.Fimp(end,:)];
                 deps_2 = obj.domains{i+1}.optVarIndices.dq(1,:);
                 domain = addConstraint(domain,'Inter-Domain-Nonlinear',...
-                    'dqResetMap',9,domain.nNode,{deps_1, deps_2},-5e-4,5e-4);
+                    'dqResetMap',9,domain.nNode,{deps_1, deps_2},-const_error_bound,const_error_bound);
             end    
         end
             
         if gaits_type == 3
             % Average Speed
             domain = addConstraint(domain,'Nonlinear-Inequality',...
-                'speed',1,domain.nNode,{{'t','q'}},speed-0.0005,speed+0.0005);
+                'speed',1,domain.nNode,{{'t','q'}},speed-const_error_bound,speed+const_error_bound);
         end
         
         
@@ -132,28 +135,28 @@ function [obj] = configureConstraints(obj, varargin)
         % dynamics equation: D*ddq + H(q,dq) + F_spring - Be*u - J^T(q)*Fe = 0;
         domain = addConstraint(domain,'Nonlinear-Equality',...
             'dynamics',7,1:domain.nNode,...
-            {{'q','dq','ddq','u','Fe'}},-5e-6,5e-6);
+            {{'q','dq','ddq','u','Fe'}},-const_error_bound,const_error_bound);
         
         % holonomic constraint (position level): h(q) - hd = 0;
         domain = addConstraint(domain,'Nonlinear-Equality',...
             'hInit',2,1,...
-            {{'h'}},-5e-6,5e-6);
+            {{'h'}},-const_error_bound,const_error_bound);
 
         % holonomic constraint (position level): h(q) - hd = 0;
         domain = addConstraint(domain,'Nonlinear-Equality',...
             'holonomicPos',2,1,...
-            {{'q','h'}},-5e-6,5e-6);
+            {{'q','h'}},-const_error_bound,const_error_bound);
         
         % holonomic constraint (velocity level): J(q)dq = 0;
         domain = addConstraint(domain,'Nonlinear-Equality',...
             'holonomicVel',2,1,...
-            {{'q','dq'}},-5e-6,+5e-6);
+            {{'q','dq'}},-const_error_bound,+const_error_bound);
        
         % holonomic constraint (acceleration level):
         % J(q)ddq + Jdot(q,dq)dq = 0;
         domain = addConstraint(domain,'Nonlinear-Equality',...
             'holonomicAcc',2,1:domain.nNode,...
-            {{'q','dq','ddq'}},-5e-6,5e-6);
+            {{'q','dq','ddq'}},-const_error_bound,const_error_bound);
 
         %  Guard
         domain = addConstraint(domain,'Nonlinear-Equality',...
@@ -168,12 +171,12 @@ function [obj] = configureConstraints(obj, varargin)
                 % y = 0
                 domain = addConstraint(domain,'Nonlinear-Equality',...
                     'y',4,j,...
-                    {{'q','t','a'}},-5e-4,5e-4,extra);
+                    {{'q','t','a'}},-const_error_bound,const_error_bound,extra);
 
                 % dy = 0
                 domain = addConstraint(domain,'Nonlinear-Equality',...
                     'dy',4,j,...
-                    {{'q','dq','t','a'}},-5e-4,5e-4,extra);
+                    {{'q','dq','t','a'}},-const_error_bound,const_error_bound,extra);
             end
             
             % ddy = Kp*y + Kd*dy
@@ -181,7 +184,7 @@ function [obj] = configureConstraints(obj, varargin)
             extra = [epsilon^2, 2*epsilon, domain.nNode, j];
             domain = addConstraint(domain,'Nonlinear-Equality',...
                 'ddy',4,j,...
-                {{'q','dq','ddq','t','a'}},-5e-4,5e-4,extra);
+                {{'q','dq','ddq','t','a'}},-const_error_bound,const_error_bound,extra);
         end
         
         %% Parameter Continuity

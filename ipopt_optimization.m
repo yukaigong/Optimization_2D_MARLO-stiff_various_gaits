@@ -1,7 +1,7 @@
 %% Direct Collocation Based Optimization
 setup;
 
-% gaits_type=3; % type 1 is periodic;
+% gaits_type=1; % type 1 is periodic;
 %               % type 2 is three step transient
 %               % type 3 is three step periodic
 % speed=-1.2;
@@ -15,7 +15,6 @@ setup;
 switch gaits_type
     case 1
         optName = 'opt_2DWalking'
-
     case 2
         optName = 'opt_2DWalking_transient'
     case 3
@@ -37,7 +36,7 @@ opt = genBoundaries(opt);
 opt = generateZ0(opt);
 
 % add constraints
-opt = configureConstraints(opt,gaits_type,speed);
+opt = configureConstraints(opt,gaits_type,speed,tgspeed,ctspeed);
 
 % add cost function
 opt = configureObjective(opt);
@@ -58,7 +57,7 @@ options.cu = opt.cu;
 
 options.ipopt.mu_strategy      = 'adaptive';
 options.ipopt.max_iter         = 2000;
-options.ipopt.tol              = 1e-3;
+options.ipopt.tol              = 1e-4;
 %     disp(['max iterations = ', num2str(options.ipopt.max_iter)])
 %     disp(['tolerance = ', num2str(options.ipopt.tol)])
 
@@ -105,7 +104,7 @@ tic
 [x, info] = ipopt(x0,funcs,options);
 toc
 
-[outputs] = getOptOutput(opt.domains, x)
+[outputs] = getOptOutput(opt, x)
 save(['x_gaits_type=' num2str(gaits_type)],'x')
 % animateStep(outputs)
 
