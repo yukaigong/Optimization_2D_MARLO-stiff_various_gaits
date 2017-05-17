@@ -36,7 +36,7 @@ opt = genBoundaries(opt);
 opt = generateZ0(opt);
 
 % add constraints
-opt = configureConstraints(opt,gaits_type,speed,tgspeed,ctspeed);
+opt = configureConstraints(opt,gaits_type,speed,tgspeed,ctspeed,constraint_bound);
 
 % add cost function
 opt = configureObjective(opt);
@@ -62,13 +62,13 @@ options.cu = opt.cu;
 
 options.ipopt.mu_strategy      = 'adaptive';
 options.ipopt.max_iter         = 4000;
-options.ipopt.tol              = 1e-2;
-%     disp(['max iterations = ', num2str(options.ipopt.max_iter)])
-%     disp(['tolerance = ', num2str(options.ipopt.tol)])
-
-options.ipopt.dual_inf_tol           = 1e2;
-options.ipopt.constr_viol_tol        = 1e-10;
-options.ipopt.compl_inf_tol          = 1e2;
+% options.ipopt.tol              = 1e-4;
+% %     disp(['max iterations = ', num2str(options.ipopt.max_iter)])
+% %     disp(['tolerance = ', num2str(options.ipopt.tol)])
+% 
+% options.ipopt.dual_inf_tol           = 1e2;
+% options.ipopt.constr_viol_tol        = 1e-4;
+% options.ipopt.compl_inf_tol          = 1e2;
 
 %options.acceptable_tol  = 1e3;
 %options.acceptable_compl_inf_tol    = 1e0;

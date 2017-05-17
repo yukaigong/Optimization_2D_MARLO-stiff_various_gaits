@@ -7,9 +7,10 @@ function [obj] = configureConstraints(obj, varargin)
     speed=varargin{2}; % for periodic gaits
     tgspeed=varargin{3}; % target speed for transient gait
     ctspeed=varargin{4}; % current speed for transient gait;
+    constraint_bound=varargin{5};
     constraints = cell(obj.nDomain,1);
     DOF = 7;
-    const_error_bound=5e-4;
+    const_error_bound=constraint_bound;
     if gaits_type == 3
         const_error_bound=5e-13/3;
     end

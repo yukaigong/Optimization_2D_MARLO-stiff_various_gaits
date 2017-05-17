@@ -10,11 +10,25 @@ function [obj] = configureObjective(obj, varargin)
     
     %% All Domain Costs
     for i=1:obj.nDomain
-        
+ 
         % Additive torque cost
         obj.domains{i} = addCost(obj.domains{i},'torqueCost',...
             {{'u'}}, 1:obj.domains{i}.nNode);
-               
+        
+        %         % Additive torque cost per step
+        %         obj.domains{i} = addCost(obj.domains{i},'torquePerSteplengthCost',...
+        %             {{'q','u'}}, 1:obj.domains{i}.nNode);
+        
+        %         % Additive torque cost per steptime
+        %         obj.domains{i} = addCost(obj.domains{i},'torquePerSteptimeCost',...
+        %             {{'t','u'}}, 1:obj.domains{i}.nNode);
+        
+        % Additive torque cost per steptime
+        
+%         coeff = 0.1;
+%         obj.domains{i} = addCost(obj.domains{i},'bezierCost',...
+%             {{'a'}}, 1, coeff);
+
         % configure domain structure
         obj.domains{i} = configObjectiveStructure(obj.domains{i},...
             obj.nzmaxCost);

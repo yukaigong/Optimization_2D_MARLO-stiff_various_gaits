@@ -374,6 +374,23 @@ J_constraint = jacobian(constraint,vars);
 matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_swingLegRetraction_', domainName], 'vars', {vars});
 matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_swingLegRetraction_', domainName], 'vars', {vars});
 
+% adding torso angle
+constraint=q(3);
+vars=[q].';
+J_constraint=jacobian(constraint,vars);
+matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_torso_', domainName], 'vars', {vars});
+matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_torso_', domainName], 'vars', {vars});
+
+% Constrain to externally provided state
+selected = sym('s',[2*DOF,1]);
+constraint = selected.*(x1-x2);
+vars = [x1].';
+extra = [selected; x2].';
+J_constraint = jacobian(constraint,vars);
+
+matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_xConstrainExternal_', domainName], 'vars', {vars,extra});
+matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_xConstrainExternal_', domainName], 'vars', {vars,extra});
+
 %% Cost Functions
 
 % torque
@@ -383,7 +400,7 @@ J_cost = jacobian(cost, vars);
 matlabFunction(cost, 'file', [BUILD_OPT_PATH ,'\f_torqueCost_', domainName], 'vars', {vars});
 matlabFunction(J_cost, 'file', [BUILD_OPT_PATH ,'\J_torqueCost_', domainName], 'vars', {vars});
 
-% torque
+% torque per step
 stepLength = abs(p4L(1));
 cost = norm(u) / stepLength;
 vars = [q;u].';
@@ -391,20 +408,20 @@ J_cost = jacobian(cost, vars);
 matlabFunction(cost, 'file', [BUILD_OPT_PATH ,'\f_torquePerSteplengthCost_', domainName], 'vars', {vars});
 matlabFunction(J_cost, 'file', [BUILD_OPT_PATH ,'\J_torquePerSteplengthCost_', domainName], 'vars', {vars});
 
-% adding torso angle
-constraint=q(3);
-vars=[q].';
-J_constraint=jacobian(constraint,vars);
-matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_torso_', domainName], 'vars', {vars});
-matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_torso_', domainName], 'vars', {vars});
+% torque per steptime
+stepLength = abs(p4L(1));
+cost = norm(u) / T;
+vars = [T;u].';
+J_cost = jacobian(cost, vars);
+matlabFunction(cost, 'file', [BUILD_OPT_PATH ,'\f_torquePerSteptimeCost_', domainName], 'vars', {vars});
+matlabFunction(J_cost, 'file', [BUILD_OPT_PATH ,'\J_torquePerSteptimeCost_', domainName], 'vars', {vars});
 
-%% Constrain to externally provided state
-selected = sym('s',[2*DOF,1]);
-constraint = selected.*(x1-x2);
-vars = [x1].';
-extra = [selected; x2].';
-J_constraint = jacobian(constraint,vars);
-
-matlabFunction(constraint, 'file', [BUILD_OPT_PATH ,'\f_xConstrainExternal_', domainName], 'vars', {vars,extra});
-matlabFunction(J_constraint, 'file', [BUILD_OPT_PATH ,'\J_xConstrainExternal_', domainName], 'vars', {vars,extra});
+% parameters constraint
+syms coeff real
+cost = coeff*norm(alpha);
+vars = [alpha].';
+extra = coeff.';
+J_cost = jacobian(cost,vars);
+matlabFunction(cost,'file',[BUILD_OPT_PATH ,'\f_bezierCost_',domainName], 'vars', {vars,extra});
+matlabFunction(cost,'file',[BUILD_OPT_PATH ,'\J_bezierCost_',domainName], 'vars', {vars,extra});
 

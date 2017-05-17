@@ -1,7 +1,13 @@
-gaits_type=2;
+gaits_type=1;
 speed=0;
 tgspeed=0;
 ctspeed=0;
+
+options.ipopt.tol                    = 1e-4;
+options.ipopt.dual_inf_tol           = 1e2;
+options.ipopt.constr_viol_tol        = 1e-13;
+options.ipopt.compl_inf_tol          = 1e2;
+constraint_bound                     = 5e-13;
 
 switch gaits_type
     case 1
@@ -36,10 +42,10 @@ switch gaits_type
         %             ipopt_optimization;
         %             save(['opt_result\trans_type2_' num2str(ctspeed*10) 'to' num2str(tgspeed*10) 'dms'],'outputs','x','info')
         %         end
-        for i=-4:1:4
+        for i=-7:1:7
             tgspeed=i/10
             %             tgspeed=ctspeed;
-            for j = -4:1:4
+            for j = -5:1:5
                 ctspeed=tgspeed+j/10;
                 gaits_type=2;
                 disp(['ctspeed' num2str(ctspeed) ';     tgspeed=' num2str(tgspeed)])

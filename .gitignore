@@ -2,7 +2,7 @@
 *.mp4
 build_opt/
 *.asv
-opt_result/
+*opt_result*/
 
 # Windows image file caches
 Thumbs.db

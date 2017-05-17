@@ -12,7 +12,7 @@ switch gaits_type
             %     end
         end
     case 2
-        for i = -12:1:12
+        for i = -11:1:11
             ctspeed = i/10;
             if abs(ctspeed)<=0.4
                 tgspeed=0;
