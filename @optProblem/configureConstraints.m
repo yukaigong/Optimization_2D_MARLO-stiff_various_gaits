@@ -9,7 +9,11 @@ function [obj] = configureConstraints(obj, varargin)
     ctspeed=varargin{4}; % current speed for transient gait;
     constraints = cell(obj.nDomain,1);
     DOF = 7;
-    const_error_bound=5e-13;
+    const_error_bound=5e-4;
+    if gaits_type == 3
+        const_error_bound=5e-13/3;
+    end
+        
     
     % register constraints
     
@@ -26,14 +30,15 @@ function [obj] = configureConstraints(obj, varargin)
         obj.domains{1} = addConstraint(obj.domains{1},'Nonlinear-Equality',...
             'xConstrainExternal',2*DOF,1,{{'q','dq'}},-const_error_bound,const_error_bound,extra);
         
-        selected=ones(2*DOF,1);selected([1,2,8,9])=0;
+        selected=ones(2*DOF,1);selected([1])=0;
         extra=[selected;x_end]';
         obj.domains{obj.nDomain} = addConstraint(obj.domains{obj.nDomain},'Nonlinear-Equality',...
             'xConstrainExternal',2*DOF,obj.domains{obj.nDomain}.nNode,{{'q','dq'}},-const_error_bound,const_error_bound,extra);
     end
     
     if gaits_type == 3
-        
+        % Constraint the last node of last domain and the first node of the
+        % first domain
         deps_1 = obj.domains{obj.nDomain}.optVarIndices.q(end,:);
         deps_2 = obj.domains{1}.optVarIndices.q(1,:);
         obj.domains{obj.nDomain} = addConstraint(obj.domains{obj.nDomain},'Inter-Domain-Nonlinear',...
@@ -89,10 +94,17 @@ function [obj] = configureConstraints(obj, varargin)
             end    
         end
             
-        if gaits_type == 3
+        if gaits_type == 3 
             % Average Speed
             domain = addConstraint(domain,'Nonlinear-Inequality',...
                 'speed',1,domain.nNode,{{'t','q'}},speed-const_error_bound,speed+const_error_bound);
+        end
+        if gaits_type == 1 | gaits_type == 3
+            % swing leg retraction
+            ub=max(-4*speed,-0.5*speed);
+            lb=min(-4*speed,-0.5*speed);
+            domain = addConstraint(domain,'Nonlinear-Inequality',...
+                'swingLegRetraction',1,domain.nNode,{{'dq'}},lb,ub);
         end
         
         
@@ -114,13 +126,7 @@ function [obj] = configureConstraints(obj, varargin)
         % Foot Height
         domain = addConstraint(domain,'Nonlinear-Inequality',...
             'footClearance',1,ceil(domain.nNode/2),{{'q'}},0.1,0.15);
-        
-        % swing leg retraction
-        ub=max(-4*speed,-0.5*speed);
-        lb=min(-4*speed,-0.5*speed);
-        domain = addConstraint(domain,'Nonlinear-Inequality',...
-            'swingLegRetraction',1,domain.nNode,{{'dq'}},lb,ub);
-        
+
 
                 
 %         % torso ang

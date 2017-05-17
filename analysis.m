@@ -10,6 +10,56 @@
 %     plot(1:24,a)
 %     hold off
 % end
+%% compare 3-step periodic and 3-step transient ( the transient is transient from and to same gaits
+figure
+a=[];
+speed_range= -12:1:12; % dm/s
+fail_speed_type3=[];
+fail_speed_type2=[];
+
+for i = speed_range
+    load(['opt_result\avg_type3_' num2str(i) 'dms'])
+    if info.status~=0
+        fail_speed_type3 = [fail_speed_type3, i/10];
+    end
+    for j = 1:length(outputs)
+        a=outputs{j}.a(1,:);
+        a=reshape(outputs{j}.a(1,:),4,6);
+        s=linspace(0,1,29);
+        for j=1:length(s)
+            b(:,j)=bezier(a,s(j));
+        end
+        for k=1:4
+            figure(k)
+            subplot(5,5,i+1-speed_range(1))
+            hold on
+            plot(s,b(k,:))
+            hold off
+            title([num2str(i/10) ' m/s'])
+        end
+    end
+    
+    load(['opt_result\trans_type2_' num2str(i) 'to' num2str(i) 'dms'])
+    if info.status~=0
+        fail_speed_type2 = [fail_speed_type2, i/10];
+    end
+    for j = 1:length(outputs)
+        a=outputs{j}.a(1,:);
+        a=reshape(outputs{j}.a(j,:),4,6);
+        s=linspace(0,1,29);
+        for j=1:length(s)
+            b(:,j)=bezier(a,s(j));
+        end
+        for k=1:4
+            figure(k)
+            subplot(5,5,i+1-speed_range(1))
+            hold on
+            plot(s,b(k,:))
+            hold off
+            title([num2str(i/10) ' m/s'])
+        end
+    end
+end
 %% compare 1-step periodic and 3-step periodic
 
 figure
@@ -25,21 +75,42 @@ for i = speed_range
     end
     for j = 1:length(outputs)
         a=outputs{j}.a(1,:);
-        subplot(5,5,i+1-speed_range(1))
-        hold on
-        plot(1:24,a)
-        hold off
-        title([num2str(i/10) ' m/s'])
+        a=reshape(outputs{j}.a(1,:),4,6);
+        s=linspace(0,1,29);
+        for j=1:length(s)
+            b(:,j)=bezier(a,s(j));
+        end
+        for k=1:4
+            figure(k)
+            subplot(5,5,i+1-speed_range(1))
+            hold on
+            plot(s,b(k,:))
+            hold off
+            title([num2str(i/10) ' m/s'])
+        end
     end
     load(['opt_result\avg_type1_' num2str(i) 'dms'])
     if info.status~=0
         fail_speed_type1 = [fail_speed_type1, i/10];
     end
     a=outputs{1}.a(1,:);
-    subplot(5,5,i+1-speed_range(1))
-    hold on
-    plot(1:24,a)
-    hold off
+        a=reshape(outputs{1}.a(1,:),4,6);
+        s=linspace(0,1,29);
+        for j=1:length(s)
+            b(:,j)=bezier(a,s(j));
+        end
+        for k=1:4
+            figure(k)
+            subplot(5,5,i+1-speed_range(1))
+            hold on
+            plot(s,b(k,:))
+            hold off
+            title([num2str(i/10) ' m/s'])
+        end
+%         subplot(5,5,i+1-speed_range(1))
+%     hold on
+%     plot(1:24,a)
+%     hold off
 end
 
 display(['3 step failed speed: ' num2str(fail_speed_type3) ' m/s']);
@@ -96,3 +167,49 @@ for i = speed_range
 end
 figure
 plot(speed_range,t)
+%% examine the result of 3-step transient
+fail_speed_type2 =[];
+exceed=[];
+speed_range= -12:1:-5; % dm/s
+for i = speed_range
+    ctspeed=i/10;
+    if abs(ctspeed)<=0.4
+        tgspeed=0;
+    else
+        tgspeed=ctspeed-sign(ctspeed)*0.4;
+    end
+    load(['opt_result\trans_type2_' num2str(ctspeed*10) 'to' num2str(tgspeed*10) 'dms'])
+    if info.status~=0
+        fail_speed_type2 = [fail_speed_type2, i/10];
+    end
+    if info.status==-1
+        exceed=[exceed, i/10];
+    end
+end
+display(['3 step transient failed speed: ' num2str(fail_speed_type2) ' m/s']);
+display(['3 step transient exceed speed: ' num2str(exceed) ' m/s']);
+%% examine the ground force
+figure
+speed_range= -12:1:12; % dm/s
+for i = speed_range
+    ctspeed=i/10
+    if abs(ctspeed)<=0.4
+        tgspeed=0;
+    else
+        tgspeed=ctspeed-sign(ctspeed)*0.4;
+    end
+%     load(['opt_result\trans_type2_' num2str(ctspeed*10) 'to' num2str(tgspeed*10) 'dms'])
+%     load(['opt_result\avg_type3_' num2str(i) 'dms'])
+    load(['opt_result\avg_type1_' num2str(i) 'dms'])
+    F1=[];
+    F2=[];
+    for j = 1:length(outputs)
+        F1=[F1;outputs{j}.Fe(:,1)];
+        F2=[F2;outputs{j}.Fe(:,2)];
+    end
+    subplot(5,5,i+13)
+%     plot(1:length(F1),F1)
+%     hold on
+    plot(1:length(F2),F2)
+        
+end

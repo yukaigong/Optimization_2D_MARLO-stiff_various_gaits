@@ -46,6 +46,11 @@ x0 = opt.Z0;
 old = load(['x_gaits_type=' num2str(gaits_type)]);
 x0 = old.x;
 
+% if gaits_type==2
+%     old = load(['opt_result\avg_type3_' num2str(ctspeed*10) 'dms']);
+%     x0 = old.x;
+% end
+
 %% Solve Optimization Problem
 debugMode = false;
 
@@ -56,14 +61,14 @@ options.cl = opt.cl;
 options.cu = opt.cu;
 
 options.ipopt.mu_strategy      = 'adaptive';
-options.ipopt.max_iter         = 2000;
-options.ipopt.tol              = 1e-4;
+options.ipopt.max_iter         = 4000;
+options.ipopt.tol              = 1e-2;
 %     disp(['max iterations = ', num2str(options.ipopt.max_iter)])
 %     disp(['tolerance = ', num2str(options.ipopt.tol)])
 
-% options.ipopt.dual_inf_tol           = 1e2;
-% options.ipopt.constr_viol_tol        = 1e-13;
-% options.ipopt.compl_inf_tol          = 1e2;
+options.ipopt.dual_inf_tol           = 1e2;
+options.ipopt.constr_viol_tol        = 1e-10;
+options.ipopt.compl_inf_tol          = 1e2;
 
 %options.acceptable_tol  = 1e3;
 %options.acceptable_compl_inf_tol    = 1e0;

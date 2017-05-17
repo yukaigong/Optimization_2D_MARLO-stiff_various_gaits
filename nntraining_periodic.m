@@ -45,8 +45,8 @@ view(net)
 %figure, plotregression(t,y)
 % figure, plotfit(net,x,t)
 
-x_line=linspace(min(x),max(x),100);
-y_line=net(x_line);
+% x_line=meshgrid(linspace(min(x(1,:)),max(x(1,:)),100),linspace(min(x(2,:)),max(x(2,:)),100));
+% y_line=net(x_line);
 
 % Re_Arrange the parameters
 % re_y_line=zeros(size(y_line));
