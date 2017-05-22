@@ -2,7 +2,7 @@ input_avg=[];
 output_alpha=[];
 for i = -7:1:7
     tgspeed = i/10;
-    for j = -4:1:4
+    for j = -5:1:5
         ctspeed=tgspeed+j/10;
         
         if tgspeed==0.7
@@ -41,10 +41,10 @@ for i = 1:4
     for j = 1:size(z_line,1)
         z_matrix(:,:,j)=reshape(z_line(j,:),size(x_matrix,1),size(x_matrix,2));
     end
-    
+    figure
     for j = 1:6
-        subplot(4,6,(i-1)*6+j)
-        scatter3(x(1,:),x(2,:),t(j,:))
+        subplot(2,3,j)
+        scatter3(x(1,:),x(2,:),t(j,:),0.5)
 %         hold on
 %         mesh(x_matrix,y_matrix,z_matrix(:,:,j));
 %         hold off

@@ -1,13 +1,13 @@
-gaits_type=1;
+gaits_type=2;
 speed=0;
 tgspeed=0;
 ctspeed=0;
 
 options.ipopt.tol                    = 1e-4;
 options.ipopt.dual_inf_tol           = 1e2;
-options.ipopt.constr_viol_tol        = 1e-13;
+options.ipopt.constr_viol_tol        = 1e-6;
 options.ipopt.compl_inf_tol          = 1e2;
-constraint_bound                     = 5e-13;
+constraint_bound                     = 5e-6;
 
 switch gaits_type
     case 1

@@ -137,7 +137,7 @@ for i=1:4
     hold off
 end
 
-%% plot 3-d curve of the gaits and see if they are smooth
+%% plot 3-d curve of the gaits and see if they are smooth ( one step periodic)
 
 outputs_name={'Stance Leg Angle', 'Swing Leg Angle', 'Stance Knee Angle', 'Swing Knee Angle'};
 t=[];
@@ -167,6 +167,29 @@ for i = speed_range
 end
 figure
 plot(speed_range,t)
+
+%% plot 3-d curve of the gaits and see if they are smooth ( three step transient, all to 0m/s)
+
+figure
+for i = -12:1:12
+    ctspeed = i/10;
+    if abs(ctspeed)<=0.5
+        tgspeed=0;
+    else
+        tgspeed=ctspeed-sign(ctspeed)*0.5;
+    end
+    load(['opt_result\trans_type2_' num2str(ctspeed*10) 'to' num2str(tgspeed*10) 'dms'])
+    a=reshape(outputs{1}.a(1,:),4,6);
+    for j = 1:4
+        subplot(2,2,j)
+        hold on
+        plotbc3(a(j,:),1,i/10)
+        hold off
+        xlabel('s')
+        ylabel('speed')
+        zlabel('angle')
+    end
+end
 %% examine the result of 3-step transient
 fail_speed_type2 =[];
 exceed=[];
