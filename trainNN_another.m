@@ -24,7 +24,7 @@ switch gaits_type
             theta_init = 1/2*(outputs{1}.q(1,4)+outputs{1}.q(1,5));
             dtheta_init = 1/2*(outputs{1}.dq(1,4)+outputs{1}.dq(1,5));
             tgspeed = 0;
-            feature = [ctspeed];
+            feature = [outputs{1}.dq(end,1)];
             input_avg=[input_avg, feature ];
             output_alpha=[output_alpha, outputs{1}.a(1,:)'];
             
