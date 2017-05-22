@@ -3,6 +3,7 @@
 build_opt/
 *.asv
 *opt_result*/
+*nn_result*/
 
 # Windows image file caches
 Thumbs.db
