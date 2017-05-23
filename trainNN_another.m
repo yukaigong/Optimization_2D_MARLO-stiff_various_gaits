@@ -28,14 +28,6 @@ switch gaits_type
             input_avg=[input_avg, feature ];
             output_alpha=[output_alpha, outputs{1}.a(1,:)'];
             
-%             for j = 1:length(outputs)
-%                 theta_init = 1/2*(outputs{j}.q(1,4)+outputs{j}.q(1,5));
-%                 dtheta_init = 1/2*(outputs{j}.dq(1,4)+outputs{j}.dq(1,5));
-%                 tgspeed = 0;
-%                 feature = [theta_init; dtheta_init];
-%                 input_avg=[input_avg, feature ];
-%                 output_alpha=[output_alpha, outputs{j}.a(1,:)'];
-%             end
         end
 end
 
