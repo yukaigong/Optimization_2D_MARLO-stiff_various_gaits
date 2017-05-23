@@ -44,7 +44,7 @@ for i = 1:4
     figure
     for j = 1:6
         subplot(2,3,j)
-        scatter3(x(1,:),x(2,:),t(j,:),0.5)
+        scatter3(x(1,:),x(2,:),t(j,:),3)
 %         hold on
 %         mesh(x_matrix,y_matrix,z_matrix(:,:,j));
 %         hold off
